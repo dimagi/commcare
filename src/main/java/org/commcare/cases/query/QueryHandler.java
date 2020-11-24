@@ -81,7 +81,7 @@ public interface QueryHandler<T> {
      * can return null, which will signal the the query couldn't be run and no predicates have
      * been evaluated.
      */
-    List<Integer> loadProfileMatches(T querySet, QueryContext queryContext);
+    Collection<Integer> loadProfileMatches(T querySet, QueryContext queryContext);
 
     /**
      * Given a succesful profile match, this method updates the predicateprofiles to remove profiles

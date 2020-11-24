@@ -27,13 +27,13 @@ public class QueryPlanner {
      *
      * Note: Should profiles that have been run should be removed by the handler
      */
-    public List<Integer> attemptProfiledQuery(Vector<PredicateProfile> profiles,
+    public Collection<Integer> attemptProfiledQuery(Vector<PredicateProfile> profiles,
                                                 QueryContext currentQueryContext){
         for (int i = 0 ; i < handlers.size() ; ++i) {
             QueryHandler handler = handlers.get(i);
             Object queryPlan = handler.profileHandledQuerySet(profiles);
             if (queryPlan != null) {
-                List<Integer> retVal = handler.loadProfileMatches(queryPlan, currentQueryContext);
+                Collection<Integer> retVal = handler.loadProfileMatches(queryPlan, currentQueryContext);
                 if (retVal != null) {
                     handler.updateProfiles(queryPlan, profiles);
                     return retVal;

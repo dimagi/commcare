@@ -5,6 +5,7 @@ import org.commcare.cases.query.IndexedSetMemberLookup;
 import org.commcare.cases.query.IndexedValueLookup;
 import org.commcare.cases.query.PredicateProfile;
 import org.commcare.cases.query.handlers.BasicStorageBackedCachingQueryHandler;
+import org.commcare.cases.query.handlers.LogicalValueIndexHandler;
 import org.commcare.modern.engine.cases.RecordSetResultCache;
 import org.commcare.modern.util.PerformanceTuningUtil;
 import org.javarosa.core.model.condition.EvaluationContext;
@@ -172,7 +173,12 @@ public abstract class StorageBackedTreeRoot<T extends AbstractTreeElement> imple
                     }
                 }
             }
-
+            LogicalIndexedValuesLookup lookup = new LogicalValueIndexHandler(indices, getStorage()).
+                    getLogicalIndexedValueLookupIfExists(xpe, evalContext);
+            if (lookup != null) {
+                optimizations.addElement(lookup);
+                continue predicate;
+            }
 
             //There's only one case where we want to keep moving along, and we would have triggered it if it were going to happen,
             //so otherwise, just get outta here.
@@ -205,7 +211,7 @@ public abstract class StorageBackedTreeRoot<T extends AbstractTreeElement> imple
         int predicatesProcessed = 0;
         while (profiles.size() > 0) {
             int startCount = profiles.size();
-            List<Integer> plannedQueryResults =
+            Collection<Integer> plannedQueryResults =
                     this.getQueryPlanner().attemptProfiledQuery(profiles, currentQueryContext);
 
             if (plannedQueryResults != null) {
