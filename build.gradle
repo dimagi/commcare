@@ -1,6 +1,7 @@
 apply plugin: 'java'
 
 // Needed even though it looks unused
+// stuff
 sourceCompatibility = 1.8
 
 repositories {
