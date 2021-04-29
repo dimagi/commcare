@@ -73,6 +73,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.12.12'
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'io.reactivex.rxjava2:rxjava:2.1.1'
+    compile 'com.google.code.gson:gson:2.8.6'
 
     cliCompile 'org.json:json:20140107'
     cliCompile group: 'regexp', name: 'regexp', version: '1.3'

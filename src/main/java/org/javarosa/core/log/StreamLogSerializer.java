@@ -2,8 +2,6 @@ package org.javarosa.core.log;
 
 import org.javarosa.core.util.SortedIntSet;
 
-import java.io.IOException;
-
 /**
  * @author ctsims
  */
@@ -20,12 +18,9 @@ public abstract class StreamLogSerializer {
         logIDs = new SortedIntSet();
     }
 
-    public final void serializeLog(int id, LogEntry entry) throws IOException {
+    public final void addLog(int id) {
         logIDs.add(id);
-        serializeLog(entry);
     }
-
-    protected abstract void serializeLog(LogEntry entry) throws IOException;
 
     public void setPurger(Purger purger) {
         this.purger = purger;
