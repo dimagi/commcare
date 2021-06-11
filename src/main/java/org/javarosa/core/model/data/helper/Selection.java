@@ -127,7 +127,7 @@ public class Selection implements Externalizable {
         if (xmlValue != null && xmlValue.length() > 0) {
             return xmlValue;
         } else {
-            throw new XPathException("Invalid XML Value for Select Option");
+            throw new XPathException("null or empty XML Value for Select Option");
         }
     }
 
