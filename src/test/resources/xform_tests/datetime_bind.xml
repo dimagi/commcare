@@ -1,0 +1,50 @@
+<h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:orx="http://openrosa.org/jr/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa" xmlns:vellum="http://commcarehq.org/xforms/vellum">
+    <h:head>
+        <h:title>Registration Form</h:title>
+        <model>
+            <instance>
+                <data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/9D86FB79-821E-4D3C-B084-666594D266BB" uiVersion="1" version="15" name="Registration Form">
+                    <title/>
+                    <time/>
+                    <copy-1-of-time/>
+                    <detail/>
+                    <case xmlns="http://commcarehq.org/case/transaction/v2" case_id="" date_modified="" user_id=""><create><case_name/><owner_id/><case_type>commcare-reminder</case_type></create><update><detail/><time/><time_test/></update></case><orx:meta xmlns:cc="http://commcarehq.org/xforms"><orx:deviceID/><orx:timeStart/><orx:timeEnd/><orx:username/><orx:userID/><orx:instanceID/><cc:appVersion/><orx:drift/></orx:meta></data>
+            </instance>
+            <bind nodeset="/data/title" type="xsd:string" required="true()"/>
+            <bind nodeset="/data/time" type="xsd:dateTime"/>
+            <bind nodeset="/data/copy-1-of-time" type="xsd:time"/>
+            <bind nodeset="/data/detail" type="xsd:string"/>
+            <itext>
+                <translation lang="en" default="">
+                    <text id="title-label">
+                        <value>Case Name</value>
+                    </text>
+                    <text id="time-label">
+                        <value>Remind on</value>
+                    </text>
+                    <text id="copy-1-of-time-label">
+                        <value>time</value>
+                    </text>
+                    <text id="detail-label">
+                        <value>Case Detail</value>
+                    </text>
+                </translation>
+            </itext>
+            <bind calculate="/data/time" nodeset="/data/case/update/time" relevant="count(/data/time) &gt; 0"/>
+        </model>
+    </h:head>
+    <h:body>
+        <input ref="/data/title">
+            <label ref="jr:itext('title-label')"/>
+        </input>
+        <input ref="/data/time">
+            <label ref="jr:itext('time-label')"/>
+        </input>
+        <input ref="/data/copy-1-of-time">
+            <label ref="jr:itext('copy-1-of-time-label')"/>
+        </input>
+        <input ref="/data/detail">
+            <label ref="jr:itext('detail-label')"/>
+        </input>
+    </h:body>
+</h:html>

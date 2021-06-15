@@ -258,8 +258,6 @@ public class XPathPathExpr extends XPathExpression {
             return (new XFormAnswerDataSerializer()).serializeAnswerData(val);
         } else if (val instanceof DateData) {
             return val.getValue();
-        } else if (val instanceof DateTimeData) {
-            return val.getValue();
         } else if (val instanceof BooleanData) {
             return val.getValue();
         } else if (val instanceof GeoPointData) {

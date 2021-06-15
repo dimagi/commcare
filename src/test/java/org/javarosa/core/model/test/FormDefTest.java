@@ -7,6 +7,7 @@ import org.javarosa.core.model.QuestionDef;
 import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.core.model.condition.IFunctionHandler;
 import org.javarosa.core.model.data.DateData;
+import org.javarosa.core.model.data.DateTimeData;
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.data.IntegerData;
 import org.javarosa.core.model.data.SelectOneData;
@@ -21,6 +22,7 @@ import org.javarosa.core.model.utils.test.PersistableSandbox;
 import org.javarosa.core.test.FormParseInit;
 import org.javarosa.form.api.FormEntryController;
 import org.javarosa.test_utils.ExprEvalUtils;
+import org.javarosa.xform.util.XFormAnswerDataSerializer;
 import org.javarosa.xpath.parser.XPathSyntaxException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -374,10 +376,10 @@ public class FormDefTest {
         fec.stepToNextEvent();
 
         fec.answerQuestion(new IntegerData(2));
-        while(fec.stepToNextEvent() != FormEntryController.EVENT_QUESTION);
+        while (fec.stepToNextEvent() != FormEntryController.EVENT_QUESTION) ;
 
         fec.answerQuestion(new UncastData("yes"));
-        while(fec.stepToNextEvent() != FormEntryController.EVENT_QUESTION) ;
+        while (fec.stepToNextEvent() != FormEntryController.EVENT_QUESTION) ;
 
         fec.getNextIndex(fec.getModel().getFormIndex(), true);
         fec.answerQuestion(new IntegerData(2));
@@ -396,7 +398,7 @@ public class FormDefTest {
     @Test
     public void testModelIterationLookahead() throws XPathSyntaxException {
         FormParseInit fpi = new FormParseInit("/xform_tests/model_iteration_lookahead.xml");
-        FormEntryController fec =  initFormEntry(fpi);
+        FormEntryController fec = initFormEntry(fpi);
         stepThroughEntireForm(fec);
 
         EvaluationContext evalCtx = fpi.getFormDef().getEvaluationContext();
@@ -416,7 +418,7 @@ public class FormDefTest {
     public void testSimilarBindConditionsAreDistinguished() throws Exception {
         FormParseInit fpi =
                 new FormParseInit("/xform_tests/test_display_conditions_regression.xml");
-        FormEntryController fec =  initFormEntry(fpi);
+        FormEntryController fec = initFormEntry(fpi);
 
         boolean visibleLabelWasPresent = false;
         do {
@@ -489,6 +491,26 @@ public class FormDefTest {
         assertNotEquals(root.getChild("question1", 1), null);
     }
 
+    @Test
+    public void testBindForDateTimeType() {
+        FormParseInit fpi = new FormParseInit("/xform_tests/datetime_bind.xml");
+        FormEntryController fec = initFormEntry(fpi);
+        DateTimeData answer = new DateTimeData(new Date());
+        do {
+            QuestionDef q = fpi.getCurrentQuestion();
+            if (q == null || q.getTextID() == null || "".equals(q.getTextID())) {
+                continue;
+            }
+            if (q.getTextID().equals("time-label")) {
+                fec.answerQuestion(answer);
+            }
+        } while (fec.stepToNextEvent() != FormEntryController.EVENT_END_OF_FORM);
+
+        // test that a value that should be updated has been updated
+        ExprEvalUtils.testEval("/data/case/update/time",
+                fpi.getFormDef().getInstance(), null, new XFormAnswerDataSerializer().serializeAnswerData(answer));
+    }
+
     /**
      * Regression: IText function in xpath was not properly using the current
      * locale instead of the default
@@ -497,31 +519,33 @@ public class FormDefTest {
     public void testITextXPathFunction() throws XPathSyntaxException {
         FormParseInit fpi = new FormParseInit("/xform_tests/itext_function.xml");
         // init form with the 'new' locale instead of the default 'old' locale
-        FormEntryController fec =  initFormEntry(fpi, "new");
+        FormEntryController fec = initFormEntry(fpi, "new");
 
         boolean inlinePassed = false;
         boolean nestedPassed = false;
 
         do {
             TreeReference currentRef = fec.getModel().getFormIndex().getReference();
-            if(currentRef == null) { continue; }
-            if(currentRef.genericize().toString().equals("/data/inline")) {
+            if (currentRef == null) {
+                continue;
+            }
+            if (currentRef.genericize().toString().equals("/data/inline")) {
                 assertEquals("Inline IText Method Callout", "right",
                         fec.getModel().getCaptionPrompt().getQuestionText());
                 inlinePassed = true;
             }
 
-            if(currentRef.genericize().toString().equals("/data/nested")) {
+            if (currentRef.genericize().toString().equals("/data/nested")) {
                 assertEquals("Nexted IText Method Callout", "right",
                         fec.getModel().getCaptionPrompt().getQuestionText());
                 nestedPassed = true;
             }
         } while (fec.stepToNextEvent() != FormEntryController.EVENT_END_OF_FORM);
 
-        if(!inlinePassed) {
+        if (!inlinePassed) {
             Assert.fail("Inline itext callout did not occur");
         }
-        if(!nestedPassed) {
+        if (!nestedPassed) {
             Assert.fail("Nested itext callout did not occur");
         }
 
@@ -538,7 +562,7 @@ public class FormDefTest {
     @Test
     public void testGroupRelevancyInsideRepeat() throws XPathSyntaxException {
         FormParseInit fpi = new FormParseInit("/xform_tests/group_relevancy_in_repeat.xml");
-        FormEntryController fec =  initFormEntry(fpi);
+        FormEntryController fec = initFormEntry(fpi);
 
         do {
             QuestionDef q = fpi.getCurrentQuestion();
@@ -627,13 +651,15 @@ public class FormDefTest {
                 continue;
             }
             TreeReference currentRef = fec.getModel().getFormIndex().getReference();
-            if(currentRef == null) { continue; }
+            if (currentRef == null) {
+                continue;
+            }
 
-            if(currentRef.genericize().toString().equals("/data/filter")) {
+            if (currentRef.genericize().toString().equals("/data/filter")) {
                 fec.answerQuestion(new SelectOneData(new Selection("a")));
             }
 
-            if(currentRef.genericize().toString().equals("/data/question")) {
+            if (currentRef.genericize().toString().equals("/data/question")) {
                 assertEquals("Itemset Filter returned the wrong size",
                         fec.getModel().getQuestionPrompt().getSelectChoices().size(),
                         3);
