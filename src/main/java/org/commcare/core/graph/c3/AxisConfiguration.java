@@ -132,9 +132,16 @@ public class AxisConfiguration extends Configuration {
                     mVariables.put(varName, labels.toString());
                     usingCustomText = true;
                     // These custom labels can be large, rotating them ensures that they're shown correctly on X axis.
-                    height = StringWidthUtil.getStringWidth(largestLabel);
-                    if (isX && largestLabel.length() > 5 && height != -1) {
-                        tick.put("rotate", 75);
+                    if (isX) {
+                        height = StringWidthUtil.getStringWidth(largestLabel);
+                        if (largestLabel.length() > 5 && height != -1) {
+                            tick.put("rotate", 75);
+                        }
+                        // Use configuration from HQ
+                        String rotation = mData.getConfiguration("x-label-rotation");
+                        if (rotation != null) {
+                            tick.put("rotate", Integer.parseInt(rotation));
+                        }
                     }
                 } catch (JSONException e) {
                     // Assume labelString is just a scalar, which
