@@ -1,0 +1,25 @@
+<h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:orx="http://openrosa.org/jr/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa" xmlns:vellum="http://commcarehq.org/xforms/vellum">
+	<h:head>
+		<h:title>Registration Child</h:title>
+		<model>
+			<instance>
+				<data xmlns:jrm="http://dev.commcarehq.org/jr/xforms" xmlns="http://openrosa.org/formdesigner/0943C44F-E29A-4A54-863E-B99B98B0EB82" uiVersion="1" version="42" name="Registration Child">
+					<child_name/>
+				<subcase_0><case xmlns="http://commcarehq.org/case/transaction/v2" case_id="" date_modified="" user_id=""><create><case_name/><owner_id/><case_type>child</case_type></create><update/><index><parent case_type="parent"/></index></case></subcase_0><case xmlns="http://commcarehq.org/case/transaction/v2" case_id="" date_modified="" user_id=""/><orx:meta xmlns:cc="http://commcarehq.org/xforms"><orx:deviceID/><orx:timeStart/><orx:timeEnd/><orx:username/><orx:userID/><orx:instanceID/><cc:appVersion/><orx:drift/></orx:meta></data>
+			</instance><instance id="commcaresession" src="jr://instance/session"/>
+			<bind nodeset="/data/child_name" type="xsd:string" required="true()"/>
+			<itext>
+				<translation lang="en" default="">
+					<text id="child_name-label">
+						<value>Child name</value>
+					</text>
+				</translation>
+			</itext>
+		<bind nodeset="/data/case/@date_modified" type="xsd:dateTime" calculate="/data/meta/timeEnd"/><bind nodeset="/data/case/@user_id" calculate="/data/meta/userID"/><bind nodeset="/data/case/@case_id" calculate="instance('commcaresession')/session/data/case_id"/><bind nodeset="/data/subcase_0/case/@date_modified" type="xsd:dateTime" calculate="/data/meta/timeEnd"/><bind nodeset="/data/subcase_0/case/@user_id" calculate="/data/meta/userID"/><setvalue ref="/data/subcase_0/case/@case_id" value="instance('commcaresession')/session/data/case_id_new_child_0" event="xforms-ready"/><bind nodeset="/data/subcase_0/case/create/case_name" calculate="/data/child_name"/><bind nodeset="/data/subcase_0/case/create/owner_id" calculate="/data/meta/userID"/><bind nodeset="/data/subcase_0/case/index/parent" calculate="/data/case/@case_id"/><setvalue ref="/data/meta/deviceID" value="instance('commcaresession')/session/context/deviceid" event="xforms-ready"/><setvalue ref="/data/meta/timeStart" value="now()" event="xforms-ready"/><bind nodeset="/data/meta/timeStart" type="xsd:dateTime"/><setvalue ref="/data/meta/timeEnd" value="now()" event="xforms-revalidate"/><bind nodeset="/data/meta/timeEnd" type="xsd:dateTime"/><setvalue ref="/data/meta/username" value="instance('commcaresession')/session/context/username" event="xforms-ready"/><setvalue ref="/data/meta/userID" value="instance('commcaresession')/session/context/userid" event="xforms-ready"/><setvalue ref="/data/meta/instanceID" value="uuid()" event="xforms-ready"/><setvalue ref="/data/meta/appVersion" value="instance('commcaresession')/session/context/appversion" event="xforms-ready"/><setvalue ref="/data/meta/drift" value="if(count(instance('commcaresession')/session/context/drift) = 1, instance('commcaresession')/session/context/drift, '')" event="xforms-revalidate"/></model>
+	</h:head>
+	<h:body>
+		<input ref="/data/child_name">
+			<label ref="jr:itext('child_name-label')"/>
+		</input>
+	</h:body>
+</h:html>

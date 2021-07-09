@@ -374,6 +374,14 @@ public class CommCareSession {
         String neededData = getNeededData(evalContext);
         String poppedType = popped == null ? "" : popped.getType();
 
+        if (popped != null) {
+            Boolean wasLastStepCompound = (Boolean) popped.getExtra(SessionFrame.COMPOUND_STEP);
+            Boolean isCurrentStepCompound = (Boolean) frame.getTopStepExtra(SessionFrame.COMPOUND_STEP);
+            if (wasLastStepCompound && isCurrentStepCompound) {
+                return true;
+            }
+        }
+
         if (neededData == null ||
                 SessionFrame.STATE_DATUM_COMPUTED.equals(neededData) ||
                 SessionFrame.STATE_DATUM_COMPUTED.equals(poppedType) ||
@@ -669,7 +677,7 @@ public class CommCareSession {
     private void createFrame(SessionFrame createdFrame,
                              StackOperation op, EvaluationContext ec) {
         if (op.isOperationTriggered(ec)) {
-            performPushInner(op, createdFrame, ec);
+            performPushInner(op, createdFrame, ec, false);
             pushNewFrame(createdFrame);
         }
     }
@@ -677,7 +685,7 @@ public class CommCareSession {
     /**
      * @return false if push was terminated early by a 'rewind'
      */
-    private boolean performPushInner(StackOperation op, SessionFrame frame, EvaluationContext ec) {
+    private boolean performPushInner(StackOperation op, SessionFrame frame, EvaluationContext ec, boolean isCompoundStep) {
         for (StackFrameStep step : op.getStackFrameSteps()) {
             if (SessionFrame.STATE_REWIND.equals(step.getType())) {
                 if (frame.rewindToMarkAndSet(step, ec)) {
@@ -686,6 +694,7 @@ public class CommCareSession {
                 // if no mark is found ignore the rewind and continue
             } else {
                 pushFrameStep(step, frame, ec);
+                frame.addExtraTopStep(SessionFrame.COMPOUND_STEP, isCompoundStep);
             }
         }
         return true;
@@ -712,7 +721,7 @@ public class CommCareSession {
      */
     private boolean performPush(StackOperation op, EvaluationContext ec) {
         if (op.isOperationTriggered(ec)) {
-            return performPushInner(op, frame, ec);
+            return performPushInner(op, frame, ec, true);
         }
         return true;
     }

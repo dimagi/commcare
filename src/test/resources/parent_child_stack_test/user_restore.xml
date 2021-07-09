@@ -1,0 +1,62 @@
+<OpenRosaResponse xmlns="http://openrosa.org/http/response">
+    <message nature="ota_restore_success">Successfully restored account check!</message>
+    <Sync xmlns="http://commcarehq.org/sync">
+        <restore_id>44cda110a74311eb9a030e58a1f12c01</restore_id>
+    </Sync>
+    <Registration xmlns="http://openrosa.org/user/registration">
+        <username>check</username>
+        <password>
+            sha1$YBqmR30lTboF$2b58299dd04f1757f841bbed0db3dfaa8af91e0d
+        </password>
+        <uuid>53e90524234447b5a1bc3acc9e334eba</uuid>
+        <date>2020-02-04</date>
+        <user_data>
+            <data key="commcare_first_name">check</data>
+            <data key="commcare_last_name">spokhriyal@dimagi.com</data>
+            <data key="commcare_phone_number" />
+            <data key="commcare_project">srishti-1</data>
+        </user_data>
+    </Registration>
+    <case case_id="first_child"
+        date_modified="2021-04-27T07:47:06.652000Z" user_id="53e90524234447b5a1bc3acc9e334eba"
+        xmlns="http://commcarehq.org/case/transaction/v2">
+        <create>
+            <case_type>child</case_type>
+            <case_name>first child</case_name>
+            <owner_id>53e90524234447b5a1bc3acc9e334eba</owner_id>
+        </create>
+        <update>
+            <date_opened>2021-04-27</date_opened>
+        </update>
+        <index>
+            <parent case_type="parent">first_parent</parent>
+        </index>
+    </case>
+    <case case_id="first_parent"
+        date_modified="2021-04-27T07:47:06.652000Z" user_id="53e90524234447b5a1bc3acc9e334eba"
+        xmlns="http://commcarehq.org/case/transaction/v2">
+        <create>
+            <case_type>parent</case_type>
+            <case_name>first</case_name>
+            <owner_id>53e90524234447b5a1bc3acc9e334eba</owner_id>
+        </create>
+        <update>
+            <date_opened>2021-04-27</date_opened>
+        </update>
+    </case>
+    <case case_id="second_child"
+        date_modified="2021-04-27T07:46:09.221000Z" user_id="53e90524234447b5a1bc3acc9e334eba"
+        xmlns="http://commcarehq.org/case/transaction/v2">
+        <create>
+            <case_type>child</case_type>
+            <case_name>second</case_name>
+            <owner_id>53e90524234447b5a1bc3acc9e334eba</owner_id>
+        </create>
+        <update>
+            <date_opened>2021-04-27</date_opened>
+        </update>
+        <index>
+            <parent case_type="parent">first_parent</parent>
+        </index>
+    </case>
+</OpenRosaResponse>

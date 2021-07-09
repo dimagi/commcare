@@ -75,6 +75,12 @@ public class SessionFrame implements Externalizable {
      */
     public static final String STATE_FORM_XMLNS = "FORM_XMLNS";
 
+    /**
+     * Used to mark a set of push stack operations as a compound step, so that at the time of
+     * popping back to a previous state, we can remove all those operations.
+     */
+    public static final String COMPOUND_STEP = "COMPOUND_STEP";
+
     // endregion - states
 
     private Vector<StackFrameStep> steps = new Vector<>();
