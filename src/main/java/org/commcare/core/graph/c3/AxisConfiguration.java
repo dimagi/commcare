@@ -5,7 +5,6 @@ import org.commcare.core.graph.model.SeriesData;
 import org.commcare.core.graph.util.GraphException;
 import org.commcare.core.graph.util.GraphUtil;
 
-import org.commcare.core.graph.util.StringWidthUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,8 +34,7 @@ public class AxisConfiguration extends Configuration {
         mConfiguration.put("y2", y2);
 
         // Bar graphs may be rotated. C3 defaults to vertical bars.
-        if (mData.getType().equals(GraphUtil.TYPE_BAR)
-                && !mData.getConfiguration("bar-orientation", "horizontal").equalsIgnoreCase("vertical")) {
+        if (isRotatedBarGraph) {
             mConfiguration.put("rotated", true);
         }
     }
@@ -87,7 +85,6 @@ public class AxisConfiguration extends Configuration {
         JSONObject tick = new JSONObject();
         boolean usingCustomText = false;
         boolean isX = key.startsWith("x");
-        int height = -1;
 
         mVariables.put(varName, "{}");
         if (labelString != null) {
@@ -131,11 +128,6 @@ public class AxisConfiguration extends Configuration {
                     tick.put("values", values);
                     mVariables.put(varName, labels.toString());
                     usingCustomText = true;
-                    // These custom labels can be large, rotating them ensures that they're shown correctly on X axis.
-                    height = StringWidthUtil.getStringWidth(largestLabel);
-                    if (isX && largestLabel.length() > 5 && height != -1) {
-                        tick.put("rotate", 75);
-                    }
                 } catch (JSONException e) {
                     // Assume labelString is just a scalar, which
                     // represents the number of labels the user wants.
@@ -162,11 +154,11 @@ public class AxisConfiguration extends Configuration {
             }
         }
 
+        if ((isX && !isRotatedBarGraph) || (isRotatedBarGraph && key.startsWith("y"))) {
+            tick.put("rotate", 75);
+        }
         if (tick.length() > 0) {
             axis.put("tick", tick);
-            if (isX && height != -1) {
-                axis.put("height", height);
-            }
         }
     }
 
@@ -215,7 +207,12 @@ public class AxisConfiguration extends Configuration {
         // Undo C3's automatic axis padding
         config.put("padding", new JSONObject("{top: 0, right: 0, bottom: 0, left: 0}"));
 
-        addTitle(config, prefix + "-title", isX ? "outer-center" : "outer-middle");
+
+        if (isRotatedBarGraph && prefix.startsWith("y")) {
+            addTitle(config, prefix + "-title", "inner-right");
+        } else {
+            addTitle(config, prefix + "-title", isX ? "outer-center" : "outer-middle");
+        }
 
         addBounds(config, prefix);
 

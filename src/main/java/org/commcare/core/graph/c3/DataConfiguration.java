@@ -377,9 +377,11 @@ public class DataConfiguration extends Configuration {
                 }
             } else {
                 if (mData.getType().equals(GraphUtil.TYPE_TIME)) {
-                    xValues.put(parseTime(p.getX(), description));
+                    String time = parseTime(p.getX(), description); // c3 needs YYYY-MM-DD HH:MM:SS format
+                    xValues.put(time);
                 } else {
-                    xValues.put(parseDouble(p.getX(), description));
+                    double val = parseDouble(p.getX(), description);
+                    xValues.put(val);
                 }
             }
             yValues.put(parseDouble(p.getY(), description));

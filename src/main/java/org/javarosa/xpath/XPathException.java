@@ -10,7 +10,6 @@ public class XPathException extends RuntimeException {
     private String prefix;
 
     public XPathException() {
-
     }
 
     public XPathException(String s) {

@@ -3,6 +3,7 @@ package org.commcare.core.graph.c3;
 import org.commcare.core.graph.model.GraphData;
 import org.commcare.core.graph.util.GraphException;
 
+import org.commcare.core.graph.util.GraphUtil;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -25,11 +26,14 @@ public class Configuration {
     final GraphData mData;
     final JSONObject mConfiguration;
     final SortedMap<String, String> mVariables;
+    final boolean isRotatedBarGraph;
 
     Configuration(GraphData data) {
         mData = data;
         mConfiguration = new JSONObject();
         mVariables = new TreeMap<>();
+        isRotatedBarGraph = mData.getType().equals(GraphUtil.TYPE_BAR)
+                && !mData.getConfiguration("bar-orientation", "horizontal").equalsIgnoreCase("vertical");
     }
 
     public JSONObject getConfiguration() {

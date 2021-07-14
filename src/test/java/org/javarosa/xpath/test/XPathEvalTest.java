@@ -1,5 +1,6 @@
 package org.javarosa.xpath.test;
 
+import org.commcare.util.EncryptionUtils;
 import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.core.model.condition.IFunctionHandler;
 import org.javarosa.core.model.data.IAnswerData;
@@ -754,28 +755,6 @@ public class XPathEvalTest {
         return keyGen.generateKey();
     }
 
-    private String extractAndDecodeMessage(String output, SecretKey secretKey)
-        throws Exception {
-        final String ENCRYPT_ALGO = "AES/GCM/NoPadding";
-        final int TAG_LENGTH_BIT = 128;
-
-        Base64.Decoder messageDecoder = Base64.getDecoder();
-        byte[] messageBytes = messageDecoder.decode(output.getBytes("UTF-8"));
-
-        ByteBuffer bb = ByteBuffer.wrap(messageBytes);
-        int iv_length_byte = bb.get() & 0xFF;
-        byte[] iv = new byte[iv_length_byte];
-        bb.get(iv);
-
-        byte[] cipherText = new byte[bb.remaining()];
-        bb.get(cipherText);
-
-        Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
-        byte[] plainText = cipher.doFinal(cipherText);
-        return new String(plainText, StandardCharsets.UTF_8);
-    }
-
     public void encryptAndCompare(EvaluationContext ec, String algorithm,
                                   int keyLength, String message,
                                   Exception expectedException) throws UnsupportedEncodingException {
@@ -796,8 +775,7 @@ public class XPathEvalTest {
                                      keyString + "','" + algorithm + "')",
                                      null, ec);
             String resultString = FunctionUtils.toString(result);
-            String decryptedMessage = extractAndDecodeMessage(resultString,
-                                                              secretKey);
+            String decryptedMessage = EncryptionUtils.decrypt(resultString, keyString);
             if (!message.equals(decryptedMessage)) {
                 fail("Expected decrypted message " + message + ", got " +
                      decryptedMessage);
