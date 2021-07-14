@@ -1,8 +1,6 @@
 package org.commcare.suite.model;
 
-import org.commcare.modern.util.Pair;
 import org.javarosa.core.model.ItemsetBinding;
-import org.javarosa.core.model.SelectChoice;
 import org.javarosa.core.util.externalizable.DeserializationException;
 import org.javarosa.core.util.externalizable.ExtUtil;
 import org.javarosa.core.util.externalizable.ExtWrapNullable;
@@ -14,7 +12,6 @@ import org.javarosa.xpath.expr.XPathExpression;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Vector;
 
 import javax.annotation.Nullable;
 
@@ -48,12 +45,15 @@ public class QueryPrompt implements Externalizable {
     @Nullable
     private ItemsetBinding itemsetBinding;
 
+    private boolean allowBlankValue;
+
     @SuppressWarnings("unused")
     public QueryPrompt() {
     }
 
     public QueryPrompt(String key, String appearance, String input, String receive,
-                       String hidden, DisplayUnit display, ItemsetBinding itemsetBinding, XPathExpression defaultValueExpr) {
+                       String hidden, DisplayUnit display, ItemsetBinding itemsetBinding,
+                       XPathExpression defaultValueExpr, boolean allowBlankValue) {
         this.key = key;
         this.appearance = appearance;
         this.input = input;
@@ -62,6 +62,7 @@ public class QueryPrompt implements Externalizable {
         this.display = display;
         this.itemsetBinding = itemsetBinding;
         this.defaultValueExpr = defaultValueExpr;
+        this.allowBlankValue = allowBlankValue;
     }
 
     @Override
@@ -74,6 +75,7 @@ public class QueryPrompt implements Externalizable {
         display = (DisplayUnit)ExtUtil.read(in, DisplayUnit.class, pf);
         itemsetBinding = (ItemsetBinding)ExtUtil.read(in, new ExtWrapNullable(ItemsetBinding.class), pf);
         defaultValueExpr = (XPathExpression)ExtUtil.read(in, new ExtWrapNullable(new ExtWrapTagged()), pf);
+        allowBlankValue = ExtUtil.readBool(in);
     }
 
     @Override
@@ -86,6 +88,7 @@ public class QueryPrompt implements Externalizable {
         ExtUtil.write(out, display);
         ExtUtil.write(out, new ExtWrapNullable(itemsetBinding));
         ExtUtil.write(out, new ExtWrapNullable(defaultValueExpr == null ? null : new ExtWrapTagged(defaultValueExpr)));
+        ExtUtil.writeBool(out, allowBlankValue);
     }
 
     public String getKey() {
@@ -110,6 +113,10 @@ public class QueryPrompt implements Externalizable {
     @Nullable
     public String getHidden() {
         return hidden;
+    }
+
+    public boolean isAllowBlankValue() {
+        return allowBlankValue;
     }
 
     public DisplayUnit getDisplay() {

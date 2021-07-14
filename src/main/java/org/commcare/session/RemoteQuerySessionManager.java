@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import javax.annotation.Nullable;
+
 /**
  * Manager for remote query datums; get/answer user prompts and build
  * resulting query url.
@@ -62,12 +64,8 @@ public class RemoteQuerySessionManager {
             String promptId = (String)en.nextElement();
             QueryPrompt prompt = queryPrompts.get(promptId);
 
-            if (isPromptSupported(prompt)) {
-                String defaultValue = "";
-                if (prompt.getDefaultValueExpr() != null) {
-                    defaultValue = FunctionUtils.toString(prompt.getDefaultValueExpr().eval(evaluationContext));
-                }
-                userAnswers.put(prompt.getKey(), defaultValue);
+            if (isPromptSupported(prompt) && prompt.getDefaultValueExpr() != null) {
+                userAnswers.put(prompt.getKey(), FunctionUtils.toString(prompt.getDefaultValueExpr().eval(evaluationContext)));
             }
 
         }
@@ -102,8 +100,16 @@ public class RemoteQuerySessionManager {
         userAnswers.clear();
     }
 
-    public void answerUserPrompt(String key, String answer) {
-        userAnswers.put(key, answer);
+    /**
+     * Register a non-null value as an answer for the given key.
+     * If value is null, removes the corresponding answer
+     */
+    public void answerUserPrompt(String key, @Nullable String value) {
+        if (value == null) {
+            userAnswers.remove(key);
+        } else {
+            userAnswers.put(key, value);
+        }
     }
 
     public URL getBaseUrl() {
@@ -129,7 +135,7 @@ public class RemoteQuerySessionManager {
                 String key = (String)e.nextElement();
                 String value = userAnswers.get(key);
                 if (!(params.containsKey(key) && params.get(key).contains(value))) {
-                    if (!StringUtils.isEmpty(value)) {
+                    if (value != null) {
                         params.put(key, userAnswers.get(key));
                     }
                 }
@@ -198,7 +204,12 @@ public class RemoteQuerySessionManager {
                             dirty = true;
                         }
                     }
-                    userAnswers.put(promptId, String.join(RemoteQuerySessionManager.MULTI_SELECT_DELIMITER, validSelectedChoices));
+                    if (validSelectedChoices.size() > 0) {
+                        userAnswers.put(promptId, String.join(RemoteQuerySessionManager.MULTI_SELECT_DELIMITER, validSelectedChoices));
+                    } else {
+                        // no value
+                        userAnswers.remove(promptId);
+                    }
                 }
             }
             index++;

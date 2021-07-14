@@ -70,7 +70,11 @@ public class XPathEqExpr extends XPathBinaryOpExpr {
     public static boolean testEquality(Object aval, Object bval) {
         boolean eq = false;
 
-        if (aval instanceof Boolean || bval instanceof Boolean) {
+        if (aval == null && bval == null) {
+            eq = true;
+        } else if (aval == null || bval == null) {
+            eq = false;
+        } else if (aval instanceof Boolean || bval instanceof Boolean) {
             if (!(aval instanceof Boolean)) {
                 aval = FunctionUtils.toBoolean(aval);
             } else if (!(bval instanceof Boolean)) {
