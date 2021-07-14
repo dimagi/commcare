@@ -5,6 +5,9 @@ import org.commcare.test.utilities.TestProfileConfiguration;
 import org.commcare.util.mocks.MockDataUtils;
 import org.commcare.util.mocks.MockUserDataSandbox;
 import org.javarosa.core.model.condition.EvaluationContext;
+import org.javarosa.core.model.trace.ReducingTraceReporter;
+import org.javarosa.core.model.trace.TraceSerialization;
+import org.javarosa.core.model.utils.InstrumentationUtils;
 import org.javarosa.xpath.parser.XPathSyntaxException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -103,8 +106,17 @@ public class CaseXPathQueryTest {
                 MockDataUtils.buildContextWithInstance(sandbox, "casedb",
                         CaseTestUtils.CASE_INSTANCE);
 
+        ReducingTraceReporter traceReporter = new ReducingTraceReporter(false);
+        ec.setDebugModeOn(traceReporter);
+
         Assert.assertTrue(CaseTestUtils.xpathEvalAndCompare(ec,
                 "count(instance('casedb')/casedb/case[@case_id = 'case_one'])", 1.0));
+
+        String trace = InstrumentationUtils.collectAndClearTraces(
+                traceReporter, "case query", TraceSerialization.TraceInfoType.FULL_PROFILE);
+
+        // make sure the evaluation was routed through a case db index lookup
+        assert trace.split("\n")[27].contains("Storage [casedb] Key Lookup [case-id|]:");
     }
 
     @Test
@@ -115,8 +127,17 @@ public class CaseXPathQueryTest {
                 MockDataUtils.buildContextWithInstance(sandbox, "casedb",
                         CaseTestUtils.CASE_INSTANCE);
 
+        ReducingTraceReporter traceReporter = new ReducingTraceReporter(false);
+        ec.setDebugModeOn(traceReporter);
+
         Assert.assertTrue(CaseTestUtils.xpathEvalAndCompare(ec,
                 "count(instance('casedb')/casedb/case[@case_id != 'case_one'])", 2.0));
+
+        String trace = InstrumentationUtils.collectAndClearTraces(
+                traceReporter, "case query", TraceSerialization.TraceInfoType.FULL_PROFILE);
+
+        // make sure the evaluation was routed through a case db index lookup
+        assert trace.split("\n")[27].contains("Storage [casedb] Key Lookup [case-id|]:");
     }
 
     @Test
