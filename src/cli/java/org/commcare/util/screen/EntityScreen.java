@@ -99,6 +99,9 @@ public class EntityScreen extends CompoundScreenHost {
     @Trace
     public void init(SessionWrapper session) throws CommCareSessionException {
         if (initialized) {
+            if (session != this.mSession) {
+                throw new CommCareSessionException("Entity screen initialized with two different session wrappers");
+            }
             return;
         }
 
