@@ -2,6 +2,7 @@ package org.commcare.util.screen;
 
 import com.google.common.collect.Multimap;
 
+import org.commcare.cases.util.StringUtils;
 import org.commcare.modern.session.SessionWrapper;
 import org.commcare.modern.util.Pair;
 import org.commcare.session.CommCareSession;
@@ -169,20 +170,15 @@ public class QueryScreen extends Screen {
             QueryPrompt queryPrompt = userInputDisplays.get(key);
             String answer = answers.get(key);
 
-            // Treat all missing values as empty
-            if (answer == null) {
-                answer = "";
-            }
-
             // If select question, we should have got an index as the answer which should
             // be converted to the corresponding value
-            if (queryPrompt.isSelect() && !answer.isEmpty()) {
+            if (queryPrompt.isSelect() && !StringUtils.isEmpty(answer)) {
                 Vector<SelectChoice> selectChoices = queryPrompt.getItemsetBinding().getChoices();
                 String[] indicesOfSelectedChoices = RemoteQuerySessionManager.extractSelectChoices(answer);
                 ArrayList<String> selectedChoices = new ArrayList<>(indicesOfSelectedChoices.length);
                 for (int i = 0; i < indicesOfSelectedChoices.length; i++) {
                     int choiceIndex = Integer.parseInt(indicesOfSelectedChoices[i]);
-                    if(choiceIndex < selectChoices.size() && choiceIndex > -1){
+                    if (choiceIndex < selectChoices.size() && choiceIndex > -1) {
                         selectedChoices.add(selectChoices.get(choiceIndex).getValue());
                     }
                 }

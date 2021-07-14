@@ -64,7 +64,7 @@
             </text>
           </display>
         </prompt>
-        <prompt key="patient_id" hidden="false">
+        <prompt key="patient_id" hidden="false" allow_blank_value="true">
           <display>
             <text>
               <locale id="query.id"/>
