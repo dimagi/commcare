@@ -1,5 +1,6 @@
 package org.commcare.util.screen;
 
+import datadog.trace.api.Trace;
 import org.commcare.cases.entity.EntityUtil;
 import org.commcare.cases.query.QueryContext;
 import org.commcare.cases.query.queryset.CurrentModelQuerySet;
@@ -85,6 +86,7 @@ public class EntityScreen extends CompoundScreenHost {
     public void evaluateAutoLaunch(String nextInput) throws CommCareSessionException {
         EvaluationContext subContext = evalContext.spawnWithCleanLifecycle();
         subContext.setVariable("next_input", nextInput);
+        System.out.println("Creating " + mShortDetail.getId());
         for (Action action : mShortDetail.getCustomActions(evalContext)) {
             if (action.isAutoLaunchAction(subContext)) {
                 // Supply an empty case list so we can "select" from it later using getEntityFromID
@@ -94,6 +96,7 @@ public class EntityScreen extends CompoundScreenHost {
         }
     }
 
+    @Trace
     public void init(SessionWrapper session) throws CommCareSessionException {
         if (initialized) {
             return;
@@ -101,6 +104,7 @@ public class EntityScreen extends CompoundScreenHost {
 
         this.setSession(session);
 
+        System.out.println("About to expandEntityReferenceSet");
         references = expandEntityReferenceSet(evalContext);
 
         //Pulled from NodeEntityFactory. We should likely replace this whole functonality with
@@ -108,27 +112,34 @@ public class EntityScreen extends CompoundScreenHost {
         QueryContext newContext = evalContext.getCurrentQueryContext()
                 .checkForDerivativeContextAndReturn(references.size());
 
+        System.out.println("About to setHackyOriginalContextBody");
         newContext.setHackyOriginalContextBody(new CurrentModelQuerySet(references));
 
+        System.out.println("About to setQueryContext");
         evalContext.setQueryContext(newContext);
 
+        System.out.println("full = " + full + ", references.size() = " + references.size());
         if (full || references.size() == 1) {
             referenceMap = new Hashtable<>();
+            System.out.println("About to put");
             EntityDatum needed = (EntityDatum) session.getNeededDatum();
             for(TreeReference reference: references) {
                 referenceMap.put(getReturnValueFromSelection(reference, needed, evalContext), reference);
             }
 
             // for now override 'here()' with the coords of Sao Paulo, eventually allow dynamic setting
+            System.out.println("About to addFunctionHandler");
             evalContext.addFunctionHandler(new ScreenUtils.HereDummyFunc(-23.56, -46.66));
 
             if (mNeededDatum.isAutoSelectEnabled() && references.size() == 1) {
+                System.out.println("About to setHighlightedEntity");
                 this.setHighlightedEntity(references.firstElement());
                 if (!this.setCurrentScreenToDetail()) {
                     this.updateSession(session);
                     readyToSkip = true;
                 }
             } else {
+                System.out.println("About to make a EntityListSubscreen");
                 mCurrentScreen = new EntityListSubscreen(mShortDetail, references, evalContext, handleCaseIndex);
             }
         }
@@ -159,6 +170,7 @@ public class EntityScreen extends CompoundScreenHost {
         evalContext = mSession.getEvaluationContext();
     }
 
+    @Trace
     private Vector<TreeReference> expandEntityReferenceSet(EvaluationContext context) {
         return evalContext.expandReference(mNeededDatum.getNodeset());
     }
@@ -182,6 +194,7 @@ public class EntityScreen extends CompoundScreenHost {
         return mCurrentScreen;
     }
 
+    @Trace
     public static String getReturnValueFromSelection(TreeReference contextRef, EntityDatum needed, EvaluationContext context) {
         // grab the session's (form) element reference, and load it.
         TreeReference elementRef =
@@ -198,6 +211,7 @@ public class EntityScreen extends CompoundScreenHost {
         return value;
     }
 
+    @Trace
     @Override
     protected void updateSession(CommCareSession session) {
         if (mPendingAction != null) {
@@ -210,10 +224,12 @@ public class EntityScreen extends CompoundScreenHost {
         session.setDatum(mNeededDatum.getDataId(), selectedValue);
     }
 
+    @Trace
     public void setHighlightedEntity(TreeReference selection) {
         this.mCurrentSelection = selection;
     }
 
+    @Trace
     public void setHighlightedEntity(String id) throws CommCareSessionException {
         if (referenceMap == null) {
             this.mCurrentSelection = mNeededDatum.getEntityFromID(evalContext, id);

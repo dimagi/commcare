@@ -20,6 +20,8 @@ import java.util.Vector;
 
 import javax.annotation.Nullable;
 
+import datadog.trace.api.Trace;
+
 // helper class for common functions related to @code{ItemsetBinding}
 public class ItemSetUtils {
 

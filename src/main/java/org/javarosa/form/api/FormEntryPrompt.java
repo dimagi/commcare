@@ -24,6 +24,7 @@ import org.javarosa.xform.parse.XFormParser;
 
 import java.util.Vector;
 
+import datadog.trace.api.Trace;
 
 /**
  * This class gives you all the information you need to display a question when
@@ -200,6 +201,8 @@ public class FormEntryPrompt extends FormEntryCaption {
     }
 
     public Vector<SelectChoice> getSelectChoices() { return getSelectChoices(true); }
+
+    @Trace
     public Vector<SelectChoice> getSelectChoices(boolean shouldAttemptDynamicPopulation) {
         QuestionDef q = getQuestion();
         ItemsetBinding itemset = q.getDynamicChoices();

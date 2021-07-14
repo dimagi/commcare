@@ -1,4 +1,5 @@
 package org.commcare.util.screen;
+import datadog.trace.api.Trace;
 
 
 import org.commcare.modern.session.SessionWrapper;
@@ -112,6 +113,7 @@ public class MenuScreen extends Screen {
         return ret;
     }
 
+    @Trace
     @Override
     public boolean handleInputAndUpdateSession(CommCareSession session, String input, boolean allowAutoLaunch) {
         try {

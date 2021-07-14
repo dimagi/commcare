@@ -11,6 +11,8 @@ import org.javarosa.core.model.instance.TreeElement;
 
 import java.util.ArrayList;
 
+import datadog.trace.api.Trace;
+
 /**
  * This class is used to navigate through an xform and appropriately manipulate
  * the FormEntryModel's state.
@@ -75,6 +77,7 @@ public class FormEntryController {
      *
      * @return OK if save was successful, error if a constraint was violated.
      */
+    @Trace
     public int answerQuestion(FormIndex index, IAnswerData data) {
         QuestionDef q = model.getQuestionPrompt(index).getQuestion();
 

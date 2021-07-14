@@ -1,4 +1,5 @@
 package org.commcare.util.screen;
+import datadog.trace.api.Trace;
 
 import com.google.common.collect.Multimap;
 
@@ -225,6 +226,7 @@ public class QueryScreen extends Screen {
         return fields;
     }
 
+    @Trace
     @Override
     public boolean handleInputAndUpdateSession(CommCareSession session, String input, boolean allowAutoLaunch) {
         String[] answers = input.split(",");
