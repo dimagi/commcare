@@ -6,6 +6,8 @@ import org.javarosa.core.util.MathUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -956,5 +958,13 @@ public class DateUtils {
             df.setTimeZone(TimeZone.getTimeZone("UTC"));
             return df.format(ms);
         }
+    }
+
+    public static boolean hasTimeComponent(Date date) {
+        LocalTime time = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalTime();
+
+        return !time.equals(LocalTime.MIDNIGHT);
     }
 }

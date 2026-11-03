@@ -16,6 +16,7 @@ import org.javarosa.core.model.data.TimeData;
 import org.javarosa.core.model.data.UncastData;
 import org.javarosa.core.model.instance.FormInstance;
 import org.javarosa.core.model.instance.TreeReference;
+import org.javarosa.core.model.utils.DateUtils;
 import org.javarosa.xpath.XPathException;
 
 import java.util.Date;
@@ -109,12 +110,12 @@ public class Recalculate extends Triggerable {
         } else if (val instanceof String) {
             return new StringData((String)val);
         } else if (val instanceof Date) {
-            if (dataType == Constants.DATATYPE_DATE_TIME) {
-                return new DateTimeData((Date)val);
+            if (dataType == Constants.DATATYPE_DATE_TIME || DateUtils.hasTimeComponent((Date)val)) {
+                return new DateData((Date)val);
             } else if (dataType == Constants.DATATYPE_TIME) {
                 return new TimeData((Date)val);
             } else {
-                return new DateData((Date)val);
+                return new DateTimeData((Date)val);
             }
         } else {
             throw new RuntimeException("unrecognized data type in 'calculate' expression: " + val.getClass().getName());
