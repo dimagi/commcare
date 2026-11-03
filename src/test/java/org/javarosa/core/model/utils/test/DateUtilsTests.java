@@ -134,6 +134,34 @@ public class DateUtilsTests {
         }
     }
 
+    @Test
+    public void testDateTimeParsesAcrossDateBoundary() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        DateUtils.resetTimezoneProvider();
+
+        Date usa_eastern = DateUtils.parseDateTime("2015-04-08T22:00:01.000000-05:00");
+        Date same_in_utc = DateUtils.parseDateTime("2015-04-09T03:00:01.000000Z");
+
+        assertEquals(DateUtils.formatDateTime(usa_eastern, DateUtils.FORMAT_ISO8601),
+                DateUtils.formatDateTime(same_in_utc, DateUtils.FORMAT_ISO8601));
+
+        TimeZone.setDefault(null);
+    }
+
+    @Test
+    public void testDateTimeParsesBasicFormatOffset() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        DateUtils.resetTimezoneProvider();
+
+        Date colon = DateUtils.parseDateTime("2015-04-08T12:00:01.000000-05:00");
+        Date no_colon = DateUtils.parseDateTime("2015-04-08T12:00:01.000000-0500");
+
+        assertEquals(DateUtils.formatDateTime(colon, DateUtils.FORMAT_ISO8601),
+                DateUtils.formatDateTime(no_colon, DateUtils.FORMAT_ISO8601));
+
+        TimeZone.setDefault(null);
+    }
+
     private long getOffset() {
         DateFields df = new DateFields();
         Date d = DateUtils.getDate(df);
